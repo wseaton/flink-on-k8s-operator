@@ -168,6 +168,7 @@ rules:
       - flinkoperator.k8s.io
     resources:
       - flinkclusters
+      - flinkclusters/finalizers
     verbs:
       - create
       - delete
