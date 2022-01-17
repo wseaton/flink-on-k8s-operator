@@ -31,6 +31,7 @@ data:
     DNS.2 = ${service}.${namespace}
     DNS.3 = ${service}.${namespace}.svc
     EOF
+    cd ${tmpdir}
     openssl req -nodes -new -x509 -keyout ca.key -out ca.crt -subj "/CN=Admission Controller Webhook CA"
     openssl genrsa -out ${tmpdir}/server-key.pem 2048
 
