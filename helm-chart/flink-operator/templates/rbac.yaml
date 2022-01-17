@@ -278,7 +278,6 @@ rules:
   - create
   - update
 {{- end }}
-{{- range .Values.watchNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -345,4 +344,3 @@ subjects:
   name: {{ template "flink-operator.serviceAccountName" $ }}
   namespace: {{ $top.Values.flinkOperatorNamespace.name }}
 {{- end }}
-
