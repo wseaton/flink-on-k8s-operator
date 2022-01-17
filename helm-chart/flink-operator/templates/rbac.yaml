@@ -44,13 +44,29 @@ rules:
   verbs:
   - create
   - patch
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: RoleBinding
+metadata:
+  name: flink-operator-leader-election-rolebinding
+  namespace: {{ .Values.flinkOperatorNamespace.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: flink-operator-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: {{ template "flink-operator.serviceAccountName" . }}
+  namespace: {{ .Values.flinkOperatorNamespace.name }}
+
+{{- range .Values.watchNamespace -}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
 metadata:
   creationTimestamp: null
   name: flink-operator-manager-role
+  namespace: {{ . }}
 rules:
 - apiGroups:
   - apps
@@ -261,21 +277,27 @@ rules:
   - get
   - create
   - update
+{{- end }}
+{{- range .Values.watchNamespace -}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   name: flink-operator-metrics-reader
+  namespace: {{ . }}
 rules:
 - nonResourceURLs:
   - /metrics
   verbs:
   - get
+{{- end }}
+{{- range .Values.watchNamespace -}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: Role
 metadata:
   name: flink-operator-proxy-role
+  namespace: {{ . }}
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -289,44 +311,40 @@ rules:
   - subjectaccessreviews
   verbs:
   - create
+{{- end }}
+{{- $top := . -}}
+{{- range .Values.watchNamespace -}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: flink-operator-leader-election-rolebinding
-  namespace: {{ .Values.flinkOperatorNamespace.name }}
+  name: flink-operator-manager-rolebinding
+  namespace: {{ . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: flink-operator-leader-election-role
-subjects:
-- kind: ServiceAccount
-  name: {{ template "flink-operator.serviceAccountName" . }}
-  namespace: {{ .Values.flinkOperatorNamespace.name }}
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: flink-operator-manager-rolebinding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
   name: flink-operator-manager-role
 subjects:
 - kind: ServiceAccount
-  name: {{ template "flink-operator.serviceAccountName" . }}
-  namespace: {{ .Values.flinkOperatorNamespace.name }}
+  name: {{ template "flink-operator.serviceAccountName" $ }}
+  namespace: {{ $top.Values.flinkOperatorNamespace.name }}
+{{- end }}
+{{- end }}
+{{- $top := . -}}
+{{- range .Values.watchNamespace -}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: RoleBinding
 metadata:
   name: flink-operator-proxy-rolebinding
+  namespace: {{ . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
+  kind: Role
   name: flink-operator-proxy-role
 subjects:
 - kind: ServiceAccount
-  name: {{ template "flink-operator.serviceAccountName" . }}
-  namespace: {{ .Values.flinkOperatorNamespace.name }}
+  name: {{ template "flink-operator.serviceAccountName" $ }}
+  namespace: {{ $top.Values.flinkOperatorNamespace.name }}
 {{- end }}
+
