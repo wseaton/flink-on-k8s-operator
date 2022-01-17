@@ -59,7 +59,7 @@ subjects:
   name: {{ template "flink-operator.serviceAccountName" . }}
   namespace: {{ .Values.flinkOperatorNamespace.name }}
 
-{{- range .Values.watchNamespace -}}
+{{- range .Values.watchNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -278,7 +278,7 @@ rules:
   - create
   - update
 {{- end }}
-{{- range .Values.watchNamespace -}}
+{{- range .Values.watchNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -291,7 +291,7 @@ rules:
   verbs:
   - get
 {{- end }}
-{{- range .Values.watchNamespace -}}
+{{- range .Values.watchNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -313,7 +313,7 @@ rules:
   - create
 {{- end }}
 {{- $top := . -}}
-{{- range .Values.watchNamespace -}}
+{{- range .Values.watchNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -331,7 +331,7 @@ subjects:
 {{- end }}
 {{- end }}
 {{- $top := . -}}
-{{- range .Values.watchNamespace -}}
+{{- range .Values.watchNamespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
