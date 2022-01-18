@@ -260,16 +260,6 @@ rules:
   - patch
   - update
 - apiGroups:
-  - admissionregistration.k8s.io/v1
-  resources:
-  - mutatingwebhookconfigurations
-  - validatingwebhookconfigurations
-  verbs:
-  - get
-  - create
-  - update
-  - patch
-- apiGroups:
   - scheduling.volcano.sh
   resources:
   - podgroups
@@ -343,4 +333,41 @@ subjects:
 - kind: ServiceAccount
   name: {{ template "flink-operator.serviceAccountName" $ }}
   namespace: {{ $top.Values.flinkOperatorNamespace.name }}
+{{- end }}
+
+# add this HAS to be a cluster role
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: flink-operator-webhook-role
+rules:
+- apiGroups:
+  - admissionregistration.k8s.io
+  resources:
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
+  verbs:
+  - get
+  - create
+  - update
+  - patch
+---
+{{- $top := . -}}
+{{- range .Values.watchNamespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: flink-operator-webhook-rolebinding
+  namespace: {{ . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: flink-operator-webhook-role
+subjects:
+- kind: ServiceAccount
+  name: {{ template "flink-operator.serviceAccountName" $ }}
+  namespace: {{ $top.Values.flinkOperatorNamespace.name }}
+{{- end }}
 {{- end }}
