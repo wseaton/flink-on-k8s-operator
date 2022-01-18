@@ -3,8 +3,9 @@ flinkOperatorNamespace:
   name: "flink-operator-system"
 
 # Watch custom resources in the namespace, ignore other namespaces. If empty, all namespaces will be watched.
+#FIXME: start here tomorrow
 watchNamespace:
-  name: ""
+  - ""
 
 # The number of replicas of the operator Deployment
 replicas: 1
