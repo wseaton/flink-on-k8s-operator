@@ -353,14 +353,11 @@ rules:
   - update
   - patch
 ---
-{{- $top := . -}}
-{{- range .Values.watchNamespace }}
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: flink-operator-webhook-rolebinding
-  namespace: {{ . }}
+  namespace: {{ .Values.flinkOperatorNamespace.name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -368,5 +365,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ template "flink-operator.serviceAccountName" $ }}
-  namespace: {{ $top.Values.flinkOperatorNamespace.name }}
-{{- end }}
+  namespace: {{ .Values.flinkOperatorNamespace.name }}
