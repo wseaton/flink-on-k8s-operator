@@ -370,4 +370,3 @@ subjects:
   name: {{ template "flink-operator.serviceAccountName" $ }}
   namespace: {{ $top.Values.flinkOperatorNamespace.name }}
 {{- end }}
-{{- end }}
