@@ -73,13 +73,7 @@ spec:
         - containerPort: 9443
           name: webhook-server
           protocol: TCP
-        resources:
-          limits:
-            cpu: 100m
-            memory: 150Mi
-          requests:
-            cpu: 100m
-            memory: 100Mi
+        resources: {{ toYaml .Values.resources | nindent 11 }}
         securityContext:
           allowPrivilegeEscalation: false
         volumeMounts:
