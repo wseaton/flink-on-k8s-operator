@@ -309,7 +309,7 @@ metadata:
 {{- end }}  
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: {{ ternary "ClusterRoleBinding" "RoleBinding" ( eq $watchNs "") }}
   name: flink-operator-manager-role
 subjects:
 - kind: ServiceAccount
@@ -325,7 +325,7 @@ metadata:
 {{- end }}  
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
+  kind: {{ ternary "ClusterRoleBinding" "RoleBinding" ( eq $watchNs "") }}
   name: flink-operator-proxy-role
 subjects:
 - kind: ServiceAccount
