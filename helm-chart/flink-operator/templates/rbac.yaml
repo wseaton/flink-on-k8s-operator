@@ -1,4 +1,5 @@
 {{- if .Values.rbac.create }}
+{{- $watchNs := (first .Values.watchNamespace ) -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -60,12 +61,12 @@ subjects:
   namespace: {{ .Values.flinkOperatorNamespace.name }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: {{ ternary "ClusterRole" "Role" ( eq .Values.watchNamespace.name "") }}
+kind: {{ ternary "ClusterRole" "Role" ( eq $watchNs "") }}
 metadata:
   creationTimestamp: null
   name: flink-operator-manager-role
-{{- if .Values.watchNamespace.name }}
-  namespace: {{ .Values.watchNamespace.name }}
+{{- if $watchNs }}
+  namespace: {{ $watchNs }}
 {{- end }}  
 rules:
 - apiGroups:
@@ -279,11 +280,11 @@ rules:
   - get
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: {{ ternary "ClusterRole" "Role" ( eq .Values.watchNamespace.name "") }}
+kind: {{ ternary "ClusterRole" "Role" ( eq $watchNs "") }}
 metadata:
   name: flink-operator-proxy-role
-{{- if .Values.watchNamespace.name }}
-  namespace: {{ .Values.watchNamespace.name }}
+{{- if $watchNs }}
+  namespace: {{ $watchNs }}
 {{- end }}  
 rules:
 - apiGroups:
@@ -300,11 +301,11 @@ rules:
   - create
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: {{ ternary "ClusterRoleBinding" "RoleBinding" ( eq .Values.watchNamespace.name "") }}
+kind: {{ ternary "ClusterRoleBinding" "RoleBinding" ( eq $watchNs "") }}
 metadata:
   name: flink-operator-manager-rolebinding
-{{- if .Values.watchNamespace.name }}
-  namespace: {{ .Values.watchNamespace.name }}
+{{- if $watchNs }}
+  namespace: {{ $watchNs }}
 {{- end }}  
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -316,11 +317,11 @@ subjects:
   namespace: {{ .Values.flinkOperatorNamespace.name }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: {{ ternary "ClusterRoleBinding" "RoleBinding" ( eq .Values.watchNamespace.name "") }}
+kind: {{ ternary "ClusterRoleBinding" "RoleBinding" ( eq $watchNs "") }}
 metadata:
   name: flink-operator-proxy-rolebinding
-{{- if .Values.watchNamespace.name }}
-  namespace: {{ .Values.watchNamespace.name }}
+{{- if $watchNs }}
+  namespace: {{ $watchNs }}
 {{- end }}  
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -330,7 +331,6 @@ subjects:
 - kind: ServiceAccount
   name: {{ template "flink-operator.serviceAccountName" $ }}
   namespace: {{ .Values.flinkOperatorNamespace.name }}
-{{- end }}
 
 # add this HAS to be a cluster role
 ---
@@ -363,3 +363,5 @@ subjects:
 - kind: ServiceAccount
   name: {{ template "flink-operator.serviceAccountName" $ }}
   namespace: {{ .Values.flinkOperatorNamespace.name }}
+
+{{- end }}
